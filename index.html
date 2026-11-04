@@ -1,0 +1,471 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PAK. PAKISTAN BATTLE</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#07111f;color:white;font-family:Arial,sans-serif}
+header{background:#101f35;padding:18px;text-align:center;border-bottom:2px solid #00d9ff}
+header h1{color:#00d9ff;margin:0}
+header p{color:#aaa}
+button{background:#00c8ed;color:#00121e;border:0;border-radius:7px;padding:12px;font-weight:bold;cursor:pointer;margin:4px}
+input,textarea,select{width:100%;padding:12px;margin:7px 0;background:#081525;color:white;border:1px solid #31516d;border-radius:7px}
+.container{max-width:650px;margin:20px auto;padding:15px}
+.card{background:#12243b;padding:18px;margin:12px 0;border-radius:12px;border:1px solid #087caa}
+h2,h3{color:#00d9ff}
+.hidden{display:none!important}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.menu button{background:#152f4b;color:white;border:1px solid #00c8ed;min-height:55px}
+.section{display:none}
+.section.active{display:block}
+.small{color:#aaa;font-size:13px}
+.danger{background:#e33;color:white}
+.green{color:#4bff9b}
+.item{border-bottom:1px solid #31516d;padding:12px 0}
+footer{text-align:center;padding:20px;color:#777}
+</style>
+</head>
+<body>
+
+<header>
+<h1>PAK. PAKISTAN BATTLE</h1>
+<p>FREE FIRE TOURNAMENT</p>
+</header>
+
+<!-- AUTHENTICATION -->
+<div id="auth" class="container">
+<div class="card" id="loginBox">
+<h2>PLAYER LOGIN</h2>
+<input id="loginId" placeholder="Email or Free Fire Name">
+<input id="loginPass" type="password" placeholder="Password">
+<button onclick="login()">LOGIN</button>
+<button onclick="show('registerBox')">CREATE ACCOUNT</button>
+<button onclick="show('forgotBox')">FORGOT PASSWORD</button>
+<hr>
+<h3>ADMIN LOGIN</h3>
+<input id="adminEmail" placeholder="Admin Email">
+<input id="adminPass" type="password" placeholder="Admin Password">
+<button onclick="adminLogin()">ADMIN LOGIN</button>
+<p class="small">Admin access is separate from player access.</p>
+</div>
+
+<div class="card hidden" id="registerBox">
+<h2>PLAYER REGISTRATION</h2>
+<input id="regName" placeholder="Full Name">
+<input id="regUid" placeholder="Free Fire UID">
+<input id="regPhone" placeholder="Phone Number">
+<input id="regEmail" type="email" placeholder="Email">
+<input id="regPass" type="password" placeholder="Password (8 characters minimum)">
+<input id="regFF" placeholder="Free Fire ID Name">
+<input id="regReferral" placeholder="Referral Code (Optional)">
+<button onclick="register()">CREATE ACCOUNT</button>
+<button onclick="show('loginBox')">BACK TO LOGIN</button>
+</div>
+
+<div class="card hidden" id="forgotBox">
+<h2>FORGOT PASSWORD</h2>
+<input id="forgotEmail" placeholder="Registered Email">
+<button onclick="alert('Password recovery requires secure email authentication.')">SUBMIT</button>
+<button onclick="show('loginBox')">BACK</button>
+</div>
+</div>
+
+<!-- PLAYER APP -->
+<div id="playerApp" class="container hidden">
+<div class="card">
+<h2 id="welcome">WELCOME PLAYER</h2>
+<p>PAK. PAKISTAN TOURNAMENT</p>
+<p>Coins: <b id="coins">0</b></p>
+</div>
+
+<div class="menu">
+<button onclick="page('home')">HOME</button>
+<button onclick="page('matches')">MATCHES</button>
+<button onclick="page('leaderboard')">LEADERBOARD</button>
+<button onclick="page('announcements')">ANNOUNCEMENT</button>
+<button onclick="page('chat')">PLAYER CONVERSATION</button>
+<button onclick="page('payment')">PAYMENT</button>
+<button onclick="page('profile')">EDIT PROFILE</button>
+<button onclick="page('referral')">REFERRAL CODE</button>
+</div>
+
+<div id="home" class="section active card">
+<h2>HOME PAGE</h2>
+<h3>Welcome to PAK. PAKISTAN BATTLE</h3>
+<p>Play Free Fire tournaments and see your match information.</p>
+<div id="homePictures"></div>
+<h3>Match Categories</h3>
+<div class="menu">
+<button onclick="filterMatches('Solo')">SOLO</button>
+<button onclick="filterMatches('Duo')">DUO</button>
+<button onclick="filterMatches('CS')">CLASH SQUAD</button>
+<button onclick="filterMatches('BR')">BATTLE ROYALE</button>
+<button onclick="filterMatches('Lone Wolf')">LONE WOLF</button>
+<button onclick="page('matches')">ALL MATCHES</button>
+</div>
+</div>
+
+<div id="matches" class="section card">
+<h2>AVAILABLE MATCHES</h2>
+<div id="matchList"></div>
+</div>
+
+<div id="leaderboard" class="section card">
+<h2>LEADERBOARD</h2>
+<div id="leaderList"></div>
+</div>
+
+<div id="announcements" class="section card">
+<h2>ANNOUNCEMENTS</h2>
+<div id="announcementList"></div>
+</div>
+
+<div id="chat" class="section card">
+<h2>PLAYER CONVERSATION</h2>
+<div id="chatList"></div>
+<textarea id="chatMessage" placeholder="Write your message"></textarea>
+<button onclick="sendMessage()">SEND MESSAGE</button>
+</div>
+
+<div id="payment" class="section card">
+<h2>PAYMENT REQUESTS</h2>
+<p class="small">Demo request records only. No real money is processed.</p>
+<h3>Deposit Request</h3>
+<input id="depositMethod" placeholder="Payment Method">
+<input id="depositAmount" type="number" placeholder="Amount">
+<input id="depositReference" placeholder="Transaction Reference">
+<button onclick="paymentRequest('Deposit')">SEND DEPOSIT REQUEST</button>
+<hr>
+<h3>Withdrawal Request</h3>
+<input id="withdrawMethod" placeholder="EasyPaisa / JazzCash">
+<input id="withdrawNumber" placeholder="Account Number">
+<input id="withdrawAmount" type="number" placeholder="Amount">
+<button onclick="paymentRequest('Withdrawal')">SEND WITHDRAWAL REQUEST</button>
+<h3>My Payment Records</h3>
+<div id="myPayments"></div>
+</div>
+
+<div id="profile" class="section card">
+<h2>EDIT PROFILE</h2>
+<input id="editName" placeholder="Name">
+<input id="editFF" placeholder="Free Fire Name">
+<input id="editPhone" placeholder="Phone Number">
+<button onclick="editProfile()">SAVE PROFILE</button>
+</div>
+
+<div id="referral" class="section card">
+<h2>REFERRAL CODE</h2>
+<p>Your referral code:</p>
+<h3 id="myReferral"></h3>
+<p>When another player registers with your referral code, you can receive 15 coins.</p>
+</div>
+
+<button class="danger" onclick="logout()">LOGOUT</button>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminApp" class="container hidden">
+<div class="card">
+<h2>MASTER ADMIN PANEL</h2>
+<p>PAK. PAKISTAN BATTLE CONTROL</p>
+</div>
+
+<div class="menu">
+<button onclick="adminPage('adminHome')">ADMIN HOME</button>
+<button onclick="adminPage('createMatch')">CREATE MATCH</button>
+<button onclick="adminPage('editMatches')">EDIT MATCHES</button>
+<button onclick="adminPage('adminLeaderboard')">LEADERBOARD</button>
+<button onclick="adminPage('players')">PLAYER DETAILS</button>
+<button onclick="adminPage('rules')">RULES</button>
+<button onclick="adminPage('adminAnnouncements')">ANNOUNCEMENTS</button>
+<button onclick="adminPage('adminPayments')">PAYMENT RECORDS</button>
+<button onclick="adminPage('adminChat')">PLAYER MESSAGES</button>
+<button onclick="adminPage('pictures')">EDIT PICTURES</button>
+</div>
+
+<div id="adminHome" class="section active card">
+<h2>ADMIN DASHBOARD</h2>
+<p>Manage tournament matches, players, results and announcements.</p>
+<div id="adminStats"></div>
+</div>
+
+<div id="createMatch" class="section card">
+<h2>CREATE MATCH</h2>
+<input id="mName" placeholder="Match Name">
+<select id="mType">
+<option>Solo</option><option>Duo</option><option>CS</option><option>BR</option><option>Lone Wolf</option>
+</select>
+<input id="mMap" placeholder="Map Name">
+<input id="mPrize" placeholder="Total Prize Pool">
+<input id="mFirst" placeholder="1st Prize">
+<input id="mSecond" placeholder="2nd Prize">
+<input id="mThird" placeholder="3rd Prize">
+<input id="mFee" placeholder="Entry Fee">
+<input id="mKill" placeholder="Per Kill Prize">
+<input id="mDate" type="datetime-local">
+<input id="mRoom" placeholder="Room ID">
+<input id="mPassword" placeholder="Room Password">
+<button onclick="createMatch()">CREATE MATCH</button>
+</div>
+
+<div id="editMatches" class="section card">
+<h2>EDIT / DELETE MATCHES</h2>
+<div id="adminMatchList"></div>
+</div>
+
+<div id="adminLeaderboard" class="section card">
+<h2>ADD MATCH RESULTS</h2>
+<select id="resultMatch"></select>
+<input id="resultPlayer" placeholder="Player Email">
+<input id="resultKills" type="number" placeholder="Kills">
+<input id="resultPosition" type="number" placeholder="Position">
+<input id="resultCoins" type="number" placeholder="Coins Awarded">
+<button onclick="addResult()">SAVE RESULT</button>
+<div id="adminResults"></div>
+</div>
+
+<div id="players" class="section card">
+<h2>REGISTERED PLAYERS</h2>
+<div id="playerList"></div>
+</div>
+
+<div id="rules" class="section card">
+<h2>TOURNAMENT RULES</h2>
+<textarea id="ruleText" placeholder="Write tournament rules"></textarea>
+<button onclick="saveRules()">SAVE RULES</button>
+<div id="savedRules"></div>
+</div>
+
+<div id="adminAnnouncements" class="section card">
+<h2>CREATE ANNOUNCEMENT</h2>
+<textarea id="newAnnouncement" placeholder="Write announcement"></textarea>
+<button onclick="addAnnouncement()">PUBLISH ANNOUNCEMENT</button>
+</div>
+
+<div id="adminPayments" class="section card">
+<h2>PAYMENT REQUESTS</h2>
+<div id="allPayments"></div>
+</div>
+
+<div id="adminChat" class="section card">
+<h2>PLAYER MESSAGES</h2>
+<div id="allMessages"></div>
+</div>
+
+<div id="pictures" class="section card">
+<h2>EDIT HOME PAGE PICTURES</h2>
+<input id="pictureUrl" placeholder="Image URL">
+<button onclick="addPicture()">ADD PICTURE</button>
+<div id="pictureList"></div>
+</div>
+
+<button class="danger" onclick="logout()">ADMIN LOGOUT</button>
+</div>
+
+<footer>PAK. PAKISTAN BATTLE © 2026</footer>
+
+<script>
+const ADMIN_EMAIL="admin@pakistanbattle.com";
+const ADMIN_PASSWORD="PGBattle@2026!";
+
+const get=(k,d=[])=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d));
+const put=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+let current=null;
+
+function show(id){
+ document.querySelectorAll("#auth .card").forEach(x=>x.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+}
+function register(){
+ let name=regName.value.trim(),uid=regUid.value.trim(),
+ phone=regPhone.value.trim(),email=regEmail.value.trim().toLowerCase(),
+ password=regPass.value,ff=regFF.value.trim(),ref=regReferral.value.trim();
+ if(!name||!uid||!phone||!email||!password||!ff)return alert("Complete all required fields.");
+ if(password.length<8)return alert("Password must be 8 characters.");
+ let users=get("players");
+ if(users.some(u=>u.email===email||u.ff.toLowerCase()===ff.toLowerCase()))
+ return alert("Account already exists.");
+ let code="PGB"+Math.random().toString(36).slice(2,8).toUpperCase();
+ let user={name,uid,phone,email,password,ff,code,coins:0};
+ users.push(user);put("players",users);
+ if(ref){
+ let owner=users.find(u=>u.code.toLowerCase()===ref.toLowerCase()&&u.email!==email);
+ if(owner){owner.coins+=15;put("players",users);}
+ }
+ alert("Registration successful. Please login.");
+ show("loginBox");
+}
+function login(){
+ let id=loginId.value.trim().toLowerCase(),p=loginPass.value;
+ let u=get("players").find(x=>(x.email===id||x.ff.toLowerCase()===id)&&x.password===p);
+ if(!u)return alert("Invalid login details.");
+ current=u.email;openPlayer();
+}
+function adminLogin(){
+ if(adminEmail.value.trim().toLowerCase()!==ADMIN_EMAIL||adminPass.value!==ADMIN_PASSWORD)
+ return alert("Invalid admin login.");
+ current="ADMIN";openAdmin();
+}
+function openPlayer(){
+ document.getElementById("auth").classList.add("hidden");
+ document.getElementById("adminApp").classList.add("hidden");
+ document.getElementById("playerApp").classList.remove("hidden");
+ refreshPlayer();
+ page("home");
+}
+function openAdmin(){
+ document.getElementById("auth").classList.add("hidden");
+ document.getElementById("playerApp").classList.add("hidden");
+ document.getElementById("adminApp").classList.remove("hidden");
+ refreshAdmin();
+ adminPage("adminHome");
+}
+function logout(){
+ current=null;
+ document.getElementById("playerApp").classList.add("hidden");
+ document.getElementById("adminApp").classList.add("hidden");
+ document.getElementById("auth").classList.remove("hidden");
+ show("loginBox");
+}
+function page(id){
+ document.querySelectorAll("#playerApp .section").forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ refreshPlayer();
+}
+function adminPage(id){
+ document.querySelectorAll("#adminApp .section").forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ refreshAdmin();
+}
+function me(){return get("players").find(x=>x.email===current);}
+function refreshPlayer(){
+ let u=me();if(!u)return;
+ welcome.textContent="WELCOME "+u.name;
+ coins.textContent=u.coins;
+ myReferral.textContent=u.code;
+ editName.value=u.name;editFF.value=u.ff;editPhone.value=u.phone;
+ renderMatches();renderAnnouncements();renderPayments();
+ chatList.innerHTML=get("messages").filter(m=>m.email===current).map(m=>`<div class="item">${safe(m.text)}<br><small>${safe(m.reply||"Waiting for admin reply")}</small></div>`).join("");
+ homePictures.innerHTML=get("pictures").map(p=>`<div class="item"><img src="${safe(p)}" style="width:100%;max-height:180px;object-fit:cover" onerror="this.style.display='none'"></div>`).join("");
+ leaderList.innerHTML=get("results").sort((a,b)=>a.position-b.position).map(r=>`<div class="item">${safe(r.name)} — Position ${r.position}, Kills ${r.kills}, Coins ${r.coins}</div>`).join("");
+}
+function renderMatches(type){
+ let matches=get("matches");
+ if(type)matches=matches.filter(m=>m.type===type);
+ matchList.innerHTML=matches.map((m,i)=>`<div class="item"><b>${safe(m.name)}</b><p>${safe(m.type)} | ${safe(m.map)}</p><p>Prize: ${safe(m.prize)} | Entry: ${safe(m.fee)}</p><p>Date: ${safe(m.date)}</p><button onclick="joinMatch(${m.id})">JOIN MATCH</button></div>`).join("")||"No matches available.";
+}
+function filterMatches(t){page("matches");renderMatches(t);}
+function joinMatch(id){
+ let joins=get("joins"),u=me();
+ if(joins.some(j=>j.id===id&&j.email===u.email))return alert("Already joined.");
+ joins.push({id,email:u.email});put("joins",joins);
+ alert("Join request saved.");
+}
+function createMatch(){
+ if(!mName.value.trim())return alert("Enter match name.");
+ let a=get("matches");
+ a.push({id:Date.now(),name:mName.value,type:mType.value,map:mMap.value,prize:mPrize.value,first:mFirst.value,second:mSecond.value,third:mThird.value,fee:mFee.value,kill:mKill.value,date:mDate.value,room:mRoom.value,password:mPassword.value});
+ put("matches",a);alert("Match created.");refreshAdmin();
+}
+function deleteMatch(id){
+ if(!confirm("Delete this match?"))return;
+ put("matches",get("matches").filter(m=>m.id!==id));refreshAdmin();
+}
+function editMatch(id){
+ let a=get("matches"),m=a.find(x=>x.id===id);if(!m)return;
+ let name=prompt("Match name",m.name);if(name===null)return;
+ m.name=name;m.map=prompt("Map name",m.map)||m.map;
+ m.prize=prompt("Prize pool",m.prize)||m.prize;
+ put("matches",a);refreshAdmin();
+}
+function addResult(){
+ let email=resultPlayer.value.trim().toLowerCase();
+ let u=get("players").find(x=>x.email===email);
+ if(!u)return alert("Player not found.");
+ let coinsAward=Number(resultCoins.value)||0;
+ let a=get("results");
+ a.push({name:u.name,position:Number(resultPosition.value)||0,kills:Number(resultKills.value)||0,coins:coinsAward});
+ put("results",a);
+ let users=get("players"),target=users.find(x=>x.email===email);
+ target.coins+=coinsAward;put("players",users);
+ alert("Result saved.");refreshAdmin();
+}
+function editProfile(){
+ let users=get("players"),u=users.find(x=>x.email===current);
+ u.name=editName.value.trim()||u.name;
+ u.ff=editFF.value.trim()||u.ff;
+ u.phone=editPhone.value.trim()||u.phone;
+ put("players",users);alert("Profile updated.");refreshPlayer();
+}
+function addAnnouncement(){
+ if(!newAnnouncement.value.trim())return;
+ let a=get("announcements");a.unshift({text:newAnnouncement.value,date:new Date().toLocaleString()});
+ put("announcements",a);newAnnouncement.value="";alert("Published.");refreshAdmin();
+}
+function renderAnnouncements(){
+ announcementList.innerHTML=get("announcements").map(a=>`<div class="item">${safe(a.text)}<p class="small">${safe(a.date)}</p></div>`).join("")||"No announcements.";
+}
+function sendMessage(){
+ let t=chatMessage.value.trim();if(!t)return;
+ let a=get("messages");a.push({email:current,text:t,reply:""});
+ put("messages",a);chatMessage.value="";refreshPlayer();
+}
+function paymentRequest(type){
+ let amount=Number(type==="Deposit"?depositAmount.value:withdrawAmount.value);
+ if(!amount||amount<=0)return alert("Enter a valid amount.");
+ let a=get("payments");
+ a.push({id:Date.now(),email:current,type,amount,method:type==="Deposit"?depositMethod.value:withdrawMethod.value,number:withdrawNumber.value,reference:depositReference.value,status:"Pending"});
+ put("payments",a);alert("Request saved for admin review.");refreshPlayer();
+}
+function renderPayments(){
+ myPayments.innerHTML=get("payments").filter(p=>p.email===current).map(p=>`<div class="item">${p.type}: ${p.amount} — ${p.status}</div>`).join("");
+}
+function saveRules(){
+ put("rules",ruleText.value);savedRules.textContent=ruleText.value;alert("Rules saved.");
+}
+function addPicture(){
+ let u=pictureUrl.value.trim();if(!u)return;
+ let a=get("pictures");a.push(u);put("pictures",a);pictureUrl.value="";refreshAdmin();
+}
+function refreshAdmin(){
+ let users=get("players"),matches=get("matches");
+ adminStats.textContent="Players: "+users.length+" | Matches: "+matches.length;
+ adminMatchList.innerHTML=matches.map(m=>`<div class="item"><b>${safe(m.name)}</b><br>${safe(m.type)}<br><button onclick="editMatch(${m.id})">EDIT</button><button class="danger" onclick="deleteMatch(${m.id})">DELETE</button></div>`).join("")||"No matches.";
+ resultMatch.innerHTML=matches.map(m=>`<option value="${m.id}">${safe(m.name)}</option>`).join("");
+ playerList.innerHTML=users.map(u=>`<div class="item">${safe(u.name)} | ${safe(u.email)} | UID: ${safe(u.uid)} | Coins: ${u.coins}<button onclick="awardCoins('${u.email.replace(/'/g,"")}')">AWARD COINS</button></div>`).join("");
+ allPayments.innerHTML=get("payments").map(p=>`<div class="item">${safe(p.email)} | ${p.type} | ${p.amount} | ${p.status}<br><button onclick="paymentStatus(${p.id},'Approved')">APPROVE</button><button class="danger" onclick="paymentStatus(${p.id},'Rejected')">REJECT</button></div>`).join("");
+ allMessages.innerHTML=get("messages").map((m,i)=>`<div class="item">${safe(m.email)}: ${safe(m.text)}<br>Reply: ${safe(m.reply||"None")}<input id="reply${i}" placeholder="Admin reply"><button onclick="replyMessage(${i})">SEND REPLY</button></div>`).join("");
+ adminResults.innerHTML=get("results").map(r=>`<div class="item">${safe(r.name)} | Position ${r.position} | Kills ${r.kills}</div>`).join("");
+ pictureList.innerHTML=get("pictures").map((p,i)=>`<div class="item">Picture ${i+1}<button class="danger" onclick="removePicture(${i})">DELETE</button></div>`).join("");
+ savedRules.textContent=get("rules", "No rules published yet.")||"No rules published yet.";
+}
+function awardCoins(email){
+ let n=Number(prompt("Enter coins to award"));
+ if(!Number.isFinite(n)||n<=0)return;
+ let a=get("players"),u=a.find(x=>x.email===email);
+ if(u){u.coins+=n;put("players",a);refreshAdmin();}
+}
+function paymentStatus(id,status){
+ let a=get("payments"),p=a.find(x=>x.id===id);
+ if(p){p.status=status;put("payments",a);refreshAdmin();}
+}
+function replyMessage(i){
+ let a=get("messages");a[i].reply=document.getElementById("reply"+i).value;
+ put("messages",a);refreshAdmin();
+}
+function removePicture(i){
+ let a=get("pictures");a.splice(i,1);put("pictures",a);refreshAdmin();
+}
+function safe(s){
+ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+window.addEventListener("load",()=>{
+ show("loginBox");
+});
+</script>
+</body>
+  </html>
+  
